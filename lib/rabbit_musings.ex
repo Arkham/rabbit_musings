@@ -1,0 +1,2 @@
+defmodule RabbitMusings do
+end
