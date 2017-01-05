@@ -1,6 +1,6 @@
 defmodule RabbitMusings.HelloWorld do
   def send do
-    create_channel(fn(channel) ->
+    RabbitMusings.create_channel(fn(channel) ->
       AMQP.Queue.declare(channel, "hello")
       AMQP.Basic.publish(channel, "", "hello", "Hello World!")
       IO.puts "[x] Sent 'Hello World!'"
@@ -18,7 +18,7 @@ defmodule RabbitMusings.HelloWorld do
   end
 
   def receive do
-    create_channel(fn(channel) ->
+    RabbitMusings.create_channel(fn(channel) ->
       AMQP.Queue.declare(channel, "hello")
       AMQP.Basic.consume(channel,
                          "hello",
@@ -28,16 +28,5 @@ defmodule RabbitMusings.HelloWorld do
 
       Receive.wait_for_messages()
     end)
-  end
-
-  defp create_channel(callback_fn) do
-    {:ok, connection} = AMQP.Connection.open
-    {:ok, channel} = AMQP.Channel.open(connection)
-
-    try do
-      callback_fn.(channel)
-    after
-      AMQP.Connection.close(connection)
-    end
   end
 end
